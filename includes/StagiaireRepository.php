@@ -2,27 +2,28 @@
 declare(strict_types=1);
 
 /**
- * Accès à la base pour les formateurs (tables utilisateur + formateur).
+ * Accès à la base pour les étudiants (tables utilisateur + stagiaire).
  * Toutes les requêtes sont préparées.
  */
-final class FormateurRepository
+final class StagiaireRepository
 {
-    private const SELECT = 'SELECT u.idUtilisateur AS id, f.matricule, u.nom, u.prenom,
-                                   u.email, f.specialite, u.statut
-                            FROM formateur f
-                            INNER JOIN utilisateur u ON u.idUtilisateur = f.idUtilisateur';
+    private const SELECT = 'SELECT u.idUtilisateur AS id, s.numInscription AS matricule,
+                                   u.nom, u.prenom, u.email, u.telephone, u.statut,
+                                   s.dateNaissance AS date_naissance
+                            FROM stagiaire s
+                            INNER JOIN utilisateur u ON u.idUtilisateur = s.idUtilisateur';
 
     public function __construct(private PDO $pdo)
     {
     }
 
-    /** Formateurs correspondant à la recherche (nom, prénom, matricule, spécialité) et au statut. */
+    /** Étudiants correspondant à la recherche (nom, prénom, matricule) et au statut. */
     public function rechercher(string $recherche, string $statut, int $limite, int $decalage): array
     {
         [$where, $parametres] = $this->filtres($recherche, $statut);
 
         $stmt = $this->pdo->prepare(
-            self::SELECT . $where . ' ORDER BY f.matricule LIMIT :limite OFFSET :decalage'
+            self::SELECT . $where . ' ORDER BY s.numInscription LIMIT :limite OFFSET :decalage'
         );
         foreach ($parametres as $cle => $valeur) {
             $stmt->bindValue($cle, $valeur);
@@ -40,8 +41,8 @@ final class FormateurRepository
 
         $stmt = $this->pdo->prepare(
             'SELECT COUNT(*)
-             FROM formateur f
-             INNER JOIN utilisateur u ON u.idUtilisateur = f.idUtilisateur' . $where
+             FROM stagiaire s
+             INNER JOIN utilisateur u ON u.idUtilisateur = s.idUtilisateur' . $where
         );
         $stmt->execute($parametres);
 
@@ -52,14 +53,14 @@ final class FormateurRepository
     {
         $stmt = $this->pdo->prepare(self::SELECT . ' WHERE u.idUtilisateur = :id');
         $stmt->execute([':id' => $id]);
-        $formateur = $stmt->fetch();
+        $etudiant = $stmt->fetch();
 
-        return $formateur === false ? null : $formateur;
+        return $etudiant === false ? null : $etudiant;
     }
 
     public function matriculeExiste(string $matricule, ?int $idExclu = null): bool
     {
-        $sql = 'SELECT 1 FROM formateur WHERE matricule = :matricule';
+        $sql = 'SELECT 1 FROM stagiaire WHERE numInscription = :matricule';
         $parametres = [':matricule' => $matricule];
 
         if ($idExclu !== null) {
@@ -90,8 +91,8 @@ final class FormateurRepository
     }
 
     /**
-     * Crée l'utilisateur (rôle formateur, mot de passe par défaut haché)
-     * puis la ligne formateur. Retourne l'id créé.
+     * Crée l'utilisateur (rôle stagiaire, mot de passe par défaut haché)
+     * puis la ligne stagiaire, sans groupe. Retourne l'id créé.
      */
     public function creer(array $d): int
     {
@@ -100,26 +101,27 @@ final class FormateurRepository
         try {
             $stmt = $this->pdo->prepare(
                 'INSERT INTO utilisateur (nom, prenom, email, telephone, motDePasse, statut, idRole)
-                 VALUES (:nom, :prenom, :email, NULL, :mot_de_passe, :statut, :id_role)'
+                 VALUES (:nom, :prenom, :email, :telephone, :mot_de_passe, :statut, :id_role)'
             );
             $stmt->execute([
                 ':nom'          => $d['nom'],
                 ':prenom'       => $d['prenom'],
                 ':email'        => $d['email'],
+                ':telephone'    => $d['telephone'],
                 ':mot_de_passe' => password_hash(MOT_DE_PASSE_PAR_DEFAUT, PASSWORD_DEFAULT),
                 ':statut'       => $d['statut'],
-                ':id_role'      => $this->idRole('formateur'),
+                ':id_role'      => $this->idRole('stagiaire'),
             ]);
             $id = (int) $this->pdo->lastInsertId();
 
             $stmt = $this->pdo->prepare(
-                'INSERT INTO formateur (idUtilisateur, matricule, specialite)
-                 VALUES (:id, :matricule, :specialite)'
+                'INSERT INTO stagiaire (idUtilisateur, numInscription, dateNaissance, idGroupe)
+                 VALUES (:id, :matricule, :date_naissance, NULL)'
             );
             $stmt->execute([
-                ':id'         => $id,
-                ':matricule'  => $d['matricule'],
-                ':specialite' => $d['specialite'],
+                ':id'             => $id,
+                ':matricule'      => $d['matricule'],
+                ':date_naissance' => $d['date_naissance'],
             ]);
 
             $this->pdo->commit();
@@ -138,26 +140,28 @@ final class FormateurRepository
         try {
             $stmt = $this->pdo->prepare(
                 'UPDATE utilisateur
-                 SET nom = :nom, prenom = :prenom, email = :email, statut = :statut
+                 SET nom = :nom, prenom = :prenom, email = :email,
+                     telephone = :telephone, statut = :statut
                  WHERE idUtilisateur = :id'
             );
             $stmt->execute([
-                ':nom'    => $d['nom'],
-                ':prenom' => $d['prenom'],
-                ':email'  => $d['email'],
-                ':statut' => $d['statut'],
-                ':id'     => $id,
+                ':nom'       => $d['nom'],
+                ':prenom'    => $d['prenom'],
+                ':email'     => $d['email'],
+                ':telephone' => $d['telephone'],
+                ':statut'    => $d['statut'],
+                ':id'        => $id,
             ]);
 
             $stmt = $this->pdo->prepare(
-                'UPDATE formateur
-                 SET matricule = :matricule, specialite = :specialite
+                'UPDATE stagiaire
+                 SET numInscription = :matricule, dateNaissance = :date_naissance
                  WHERE idUtilisateur = :id'
             );
             $stmt->execute([
-                ':matricule'  => $d['matricule'],
-                ':specialite' => $d['specialite'],
-                ':id'         => $id,
+                ':matricule'      => $d['matricule'],
+                ':date_naissance' => $d['date_naissance'],
+                ':id'             => $id,
             ]);
 
             $this->pdo->commit();
@@ -165,6 +169,20 @@ final class FormateurRepository
             $this->pdo->rollBack();
             throw $e;
         }
+    }
+
+    /** Passe l'étudiant à « inactif » (sans le supprimer). */
+    public function desactiver(int $id): bool
+    {
+        $stmt = $this->pdo->prepare(
+            "UPDATE utilisateur u
+             INNER JOIN stagiaire s ON s.idUtilisateur = u.idUtilisateur
+             SET u.statut = 'inactif'
+             WHERE u.idUtilisateur = :id AND u.statut = 'actif'"
+        );
+        $stmt->execute([':id' => $id]);
+
+        return $stmt->rowCount() > 0;
     }
 
     private function idRole(string $libelle): int
@@ -188,11 +206,10 @@ final class FormateurRepository
 
         if ($recherche !== '') {
             $motif = '%' . addcslashes($recherche, '%_\\') . '%';
-            $conditions[] = '(u.nom LIKE :r1 OR u.prenom LIKE :r2 OR f.matricule LIKE :r3 OR f.specialite LIKE :r4)';
+            $conditions[] = '(u.nom LIKE :r1 OR u.prenom LIKE :r2 OR s.numInscription LIKE :r3)';
             $parametres[':r1'] = $motif;
             $parametres[':r2'] = $motif;
             $parametres[':r3'] = $motif;
-            $parametres[':r4'] = $motif;
         }
 
         if ($statut !== 'tous') {
