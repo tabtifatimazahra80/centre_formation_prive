@@ -1,0 +1,601 @@
+/* ==========================================================
+   Centre de Formation — feuille de style unique
+   ========================================================== */
+
+:root {
+    --bleu: #1f3a5f;
+    --bleu-fonce: #17304f;
+    --bleu-actif: #d3dde9;
+    --vert: #2f7d5b;
+    --rouge: #b03a2e;
+    --rouge-clair: #fbeaea;
+    --rouge-bord: #e3a7a1;
+    --vert-clair: #e8f4ee;
+    --vert-bord: #a9d3bd;
+    --fond: #f3f5f8;
+    --blanc: #ffffff;
+    --bord: #d5d9df;
+    --texte: #2b3340;
+    --discret: #6b7280;
+    --ligne-paire: #f0f1f4;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: var(--fond);
+    color: var(--texte);
+    font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+}
+
+h1 {
+    margin: 0 0 6px;
+    color: var(--bleu);
+    font-size: 24px;
+}
+
+a {
+    color: var(--bleu);
+}
+
+:focus-visible {
+    outline: 3px solid #5b8bd0;
+    outline-offset: 2px;
+}
+
+.sous-titre {
+    margin: 0 0 20px;
+    color: var(--discret);
+}
+
+/* ---------- Mise en page ---------- */
+
+.barre-haut {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 24px;
+    background: var(--bleu);
+    color: var(--blanc);
+}
+
+.marque {
+    color: var(--blanc);
+    font-size: 18px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.barre-utilisateur {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.barre-utilisateur form {
+    margin: 0;
+}
+
+.corps {
+    display: flex;
+    min-height: calc(100vh - 54px);
+}
+
+.menu-lateral {
+    flex: 0 0 200px;
+    background: var(--blanc);
+    border-right: 1px solid var(--bord);
+    padding: 12px 0;
+}
+
+.menu-lateral ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.menu-lateral a {
+    display: block;
+    padding: 12px 20px;
+    border-left: 5px solid transparent;
+    color: var(--texte);
+    text-decoration: none;
+}
+
+.menu-lateral a:hover {
+    background: var(--ligne-paire);
+}
+
+.menu-lateral a.actif {
+    background: var(--bleu-actif);
+    border-left-color: var(--bleu);
+    color: var(--bleu);
+    font-weight: 700;
+}
+
+.contenu {
+    flex: 1;
+    min-width: 0;
+    padding: 24px 32px;
+}
+
+/* ---------- Boutons ---------- */
+
+.btn {
+    display: inline-block;
+    padding: 9px 18px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font: inherit;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-primaire {
+    background: var(--bleu);
+    color: var(--blanc);
+}
+
+.btn-primaire:hover {
+    background: var(--bleu-fonce);
+}
+
+.btn-danger {
+    background: var(--rouge);
+    color: var(--blanc);
+}
+
+.btn-danger:hover {
+    background: #8f2e24;
+}
+
+.btn-contour {
+    background: var(--blanc);
+    border-color: var(--bleu);
+    color: var(--bleu);
+}
+
+.btn-clair {
+    padding: 6px 14px;
+    background: var(--blanc);
+    color: var(--bleu);
+}
+
+.btn-plein {
+    width: 100%;
+}
+
+.btn-desactive {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* ---------- Alertes ---------- */
+
+.alerte {
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    border: 1px solid;
+    border-radius: 4px;
+    text-align: center;
+}
+
+.alerte-erreur {
+    background: var(--rouge-clair);
+    border-color: var(--rouge-bord);
+    color: var(--rouge);
+}
+
+.alerte-succes {
+    background: var(--vert-clair);
+    border-color: var(--vert-bord);
+    color: var(--vert);
+}
+
+/* ---------- Connexion ---------- */
+
+.page-connexion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 16px;
+}
+
+.carte-connexion {
+    width: 100%;
+    max-width: 400px;
+    padding: 32px 30px;
+    background: var(--blanc);
+    border: 1px solid var(--bord);
+}
+
+.carte-connexion h1 {
+    text-align: center;
+    font-size: 22px;
+}
+
+.carte-connexion .sous-titre {
+    text-align: center;
+}
+
+.carte-connexion .btn {
+    margin-top: 8px;
+}
+
+/* ---------- Accueil ---------- */
+
+.cartes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 20px;
+    max-width: 900px;
+}
+
+.carte {
+    display: block;
+    padding: 16px;
+    background: var(--blanc);
+    border: 1px solid var(--bord);
+    border-top: 12px solid var(--vert);
+    color: var(--texte);
+    text-decoration: none;
+}
+
+.carte:hover {
+    border-color: var(--vert);
+}
+
+.carte strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--bleu);
+    font-size: 16px;
+}
+
+.carte span {
+    color: var(--discret);
+    font-size: 14px;
+}
+
+/* ---------- Liste des étudiants ---------- */
+
+.entete-page {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.entete-page h1 {
+    margin: 0;
+}
+
+.recherche {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.recherche input[type="search"] {
+    flex: 1 1 260px;
+}
+
+.recherche select {
+    flex: 0 0 160px;
+}
+
+.defilement-horizontal {
+    overflow-x: auto;
+}
+
+.tableau {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--blanc);
+    border: 1px solid var(--bord);
+}
+
+.tableau th {
+    padding: 11px 12px;
+    background: var(--bleu);
+    color: var(--blanc);
+    text-align: left;
+    white-space: nowrap;
+}
+
+.tableau td {
+    padding: 11px 12px;
+    border-top: 1px solid var(--bord);
+}
+
+.tableau tbody tr:nth-child(even) {
+    background: var(--ligne-paire);
+}
+
+.tableau .vide {
+    padding: 24px;
+    color: var(--discret);
+    text-align: center;
+}
+
+.actions {
+    white-space: nowrap;
+}
+
+.actions a,
+.actions .action-inactive {
+    margin-right: 16px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.actions .action-danger {
+    color: var(--rouge);
+}
+
+.actions .action-inactive {
+    color: var(--discret);
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.badge {
+    display: inline-block;
+    min-width: 66px;
+    padding: 2px 12px;
+    border: 2px solid;
+    border-radius: 14px;
+    background: var(--blanc);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.badge-actif {
+    border-color: var(--vert);
+    color: var(--vert);
+}
+
+.badge-inactif {
+    border-color: var(--rouge);
+    color: var(--rouge);
+}
+
+.pied-liste {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+    color: var(--discret);
+}
+
+.pagination {
+    display: flex;
+    gap: 12px;
+}
+
+.pagination a {
+    text-decoration: none;
+}
+
+.pagination .courante {
+    color: var(--texte);
+    font-weight: 700;
+}
+
+.pagination .desactive {
+    color: var(--discret);
+    opacity: 0.6;
+}
+
+/* ---------- Formulaires ---------- */
+
+.champ {
+    margin-bottom: 16px;
+}
+
+.champ label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+input[type="password"],
+input[type="search"],
+select {
+    width: 100%;
+    padding: 9px 10px;
+    background: var(--blanc);
+    border: 1px solid #9aa1ac;
+    border-radius: 3px;
+    color: var(--texte);
+    font: inherit;
+}
+
+.formulaire {
+    max-width: 880px;
+    margin-top: 18px;
+    padding: 24px;
+    background: var(--blanc);
+    border: 1px solid var(--bord);
+}
+
+.grille-formulaire {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 28px;
+}
+
+.erreur-champ {
+    display: block;
+    margin-top: 4px;
+    color: var(--rouge);
+    font-size: 13px;
+}
+
+.note {
+    margin: 0 0 4px;
+    color: var(--discret);
+    font-size: 14px;
+}
+
+.note-erreur {
+    color: var(--rouge);
+}
+
+.champ-actions {
+    align-self: end;
+}
+
+.champ-actions-ligne {
+    grid-column: 1 / -1;
+}
+
+.boutons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.boutons form {
+    margin: 0;
+}
+
+.boutons-centres {
+    justify-content: center;
+}
+
+/* ---------- Fiche étudiant ---------- */
+
+.lien-retour {
+    display: inline-block;
+    margin-bottom: 14px;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.disposition-fiche {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 28px;
+}
+
+.fiche {
+    flex: 1 1 420px;
+    max-width: 560px;
+    padding: 8px 20px 20px;
+    background: var(--blanc);
+    border: 1px solid var(--bord);
+}
+
+.fiche dl {
+    margin: 0;
+}
+
+.ligne-fiche {
+    display: flex;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--bord);
+}
+
+.ligne-fiche dt {
+    flex: 0 0 160px;
+    font-weight: 700;
+}
+
+.ligne-fiche dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.confirmation {
+    flex: 0 1 300px;
+    padding: 16px 20px 20px;
+    background: var(--blanc);
+    border: 2px solid var(--rouge);
+    text-align: center;
+}
+
+.confirmation h2 {
+    margin: 0 0 10px;
+    color: var(--rouge);
+    font-size: 18px;
+}
+
+/* ---------- Petits écrans ---------- */
+
+@media (max-width: 760px) {
+    .corps {
+        flex-direction: column;
+    }
+
+    .menu-lateral {
+        flex: none;
+        border-right: 0;
+        border-bottom: 1px solid var(--bord);
+        padding: 0;
+    }
+
+    .menu-lateral ul {
+        display: flex;
+        overflow-x: auto;
+    }
+
+    .menu-lateral a {
+        border-left: 0;
+        border-bottom: 4px solid transparent;
+        white-space: nowrap;
+    }
+
+    .menu-lateral a.actif {
+        border-bottom-color: var(--bleu);
+    }
+
+    .contenu {
+        padding: 18px 16px;
+    }
+
+    .grille-formulaire {
+        grid-template-columns: 1fr;
+    }
+
+    .ligne-fiche {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .ligne-fiche dt {
+        flex: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
+}
