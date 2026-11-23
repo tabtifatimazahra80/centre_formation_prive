@@ -1,0 +1,7 @@
+# Informations sensibles
+.env
+.env.*
+!.env.example
+
+# Configuration locale
+/config/db.php
