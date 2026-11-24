@@ -9,6 +9,10 @@ DROP DATABASE IF EXISTS db_centre_formation;
 CREATE DATABASE db_centre_formation CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE db_centre_formation;
 
+-- -----------------------------------------------------
+-- Tables
+-- -----------------------------------------------------
+
 CREATE TABLE role (
   idRole  INT AUTO_INCREMENT PRIMARY KEY,
   libelle VARCHAR(50) NOT NULL UNIQUE
@@ -36,11 +40,13 @@ CREATE TABLE groupe (
   statut     ENUM('actif','inactif') NOT NULL DEFAULT 'actif'
 ) ENGINE=InnoDB;
 
+-- idGroupe accepte NULL : un stagiaire ajouté depuis le formulaire
+-- (sans groupe) est enregistré sans groupe ; l'affectation se fait plus tard.
 CREATE TABLE stagiaire (
   idUtilisateur  INT PRIMARY KEY,
   numInscription VARCHAR(50) NOT NULL UNIQUE,
   dateNaissance  DATE,
-  idGroupe       INT NOT NULL,
+  idGroupe       INT NULL,
   CONSTRAINT fk_stagiaire_utilisateur FOREIGN KEY (idUtilisateur) REFERENCES utilisateur(idUtilisateur) ON DELETE CASCADE,
   CONSTRAINT fk_stagiaire_groupe      FOREIGN KEY (idGroupe)      REFERENCES groupe(idGroupe)
 ) ENGINE=InnoDB;
@@ -120,33 +126,41 @@ CREATE TABLE note (
 ) ENGINE=InnoDB;
 
 -- =====================================================
--- DONNEES REELLES (emploi du temps du groupe DIA_DEVOWFS_TS_203)
+-- DONNEES REELLES (groupe DIA_DEVOWFS_TS_203)
 -- Mot de passe de tous les comptes : Admin@123
--- Matricules, emails et noms incomplets des stagiaires :
+-- Noms incomplets des stagiaires ('-') et emails :
 -- valeurs provisoires (a corriger avec la page Modifier)
 -- =====================================================
 
 INSERT INTO role (libelle) VALUES ('administrateur'), ('formateur'), ('stagiaire');
 
+-- Utilisateurs : 1 = administrateur, 2 a 4 = formateurs, 5 a 18 = stagiaires
 INSERT INTO utilisateur (nom, prenom, email, telephone, motDePasse, statut, idRole) VALUES
-('ABOULFARAJ', 'AYA', 'aboulfaraj.aya@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('EL MOUSSABIQ', 'MARWA', 'elmoussabiq.marwa@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('EL MOUSSABIQ', 'SAFAE', 'elmoussabiq.safae@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('EL-MANSOUR', 'HICHAM', 'elmansour.hicham@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('TABTI', 'FATIMA EZZAHRAA', 'tabti.fatimaezzahraa@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('ZAHRI', 'MERIEM', 'zahri.meriem@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('-', 'Dounia',    'dounia@centre.ma',    NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('-', 'Amanas',    'amanas@centre.ma',    NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('-', 'Hiba',      'hiba@centre.ma',      NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('-', 'Khadija',   'khadija@centre.ma',   NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('-', 'Sanae',     'sanae@centre.ma',     NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('-', 'Yassine',   'yassine@centre.ma',   NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('-', 'Zineb',     'zineb@centre.ma',     NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('ASSAL', 'ABDELAZIZ', 'assal.abdelaziz@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
-('RITY', 'ILYASSE', 'rity.ilyasse@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3);
+-- Administrateur
+('ADMIN', 'H', 'admin_H@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 1),
+-- Formateurs
+('EL BERKAOUI ALAOUI', 'RACHID',    'elberkaouialaoui.rachid@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 2),
+('GOUMIH',             'MOHAMED',    'goumih.mohamed@centre.ma',          NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 2),
+('LAARAJ',             'SALAHEDDINE','laaraj.salaheddine@centre.ma',      NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 2),
+-- Stagiaires
+('EL-MANSOUR', 'HICHAM',            'elmansour.hicham@centre.ma',     NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 1),
+('ABOULFARAJ',   'AYA',             'aboulfaraj.aya@centre.ma',       NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('EL MOUSSABIQ', 'MARWA',           'elmoussabiq.marwa@centre.ma',    NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('EL MOUSSABIQ', 'SAFAE',           'elmoussabiq.safae@centre.ma',    NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('TABTI',        'FATIMA EZZAHRAA', 'tabti.fatimaezzahraa@centre.ma', NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('ZAHRI',        'MERIEM',          'zahri.meriem@centre.ma',         NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('-',            'Dounia',          'dounia@centre.ma',               NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('-',            'Amanas',          'amanas@centre.ma',               NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('-',            'Hiba',            'hiba@centre.ma',                 NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('-',            'Khadija',         'khadija@centre.ma',              NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('-',            'Sanae',           'sanae@centre.ma',                NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('-',            'Yassine',         'yassine@centre.ma',              NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('-',            'Zineb',           'zineb@centre.ma',                NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('ASSAL',        'ABDELAZIZ',       'assal.abdelaziz@centre.ma',      NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3),
+('RITY',         'ILYASSE',         'rity.ilyasse@centre.ma',         NULL, '$2y$12$xqkMU06e0Zo2SzrUPSa/Hu/EGC6xeiB00MnNg.HlPNv/tQYfwftdS', 'actif', 3);
 
 INSERT INTO groupe (codeGroupe, nom, filiere, annee, capacite, statut) VALUES
-('DIA_DEVOWFS_TS_203', 'DIA_DEVOWFS_TS_203', 'Développement Digital', '2ème année',20 , 'actif');
+('DIA_DEVOWFS_TS_203', 'DIA_DEVOWFS_TS_203', 'Développement Digital', '2ème année', 20, 'actif');
 
 INSERT INTO administrateur (idUtilisateur) VALUES (1);
 
@@ -154,7 +168,6 @@ INSERT INTO formateur (idUtilisateur, matricule, specialite) VALUES
   (2, 'F001', 'Approche agile'),
   (3, 'F002', 'Gestion des données'),
   (4, 'F003', 'Développement front-end');
-
 
 INSERT INTO stagiaire (idUtilisateur, numInscription, dateNaissance, idGroupe) VALUES
   (5,  'E0001', NULL, 1),
@@ -170,15 +183,12 @@ INSERT INTO stagiaire (idUtilisateur, numInscription, dateNaissance, idGroupe) V
   (15, 'E0011', NULL, 1),
   (16, 'E0012', NULL, 1),
   (17, 'E0013', NULL, 1),
-  (18, 'E0014', NULL, 1),
-  (19, 'E0015', NULL, 1),
-  (20, 'E0016', NULL, 1);
-
+  (18, 'E0014', NULL, 1);
 
 INSERT INTO module (codeModule, intitule, description, volumeHoraire, idFormateur) VALUES
-  ('M101', 'Développement front-end', 'Développement front-end', 60, 4),
-  ('M102', 'Approche agile',          'Approche agile',          60, 2),
-  ('M103', 'Gestion des données',     'Gestion des données',     60, 3);
+  ('M202', 'Approche agile',          'Approche agile',          60, 2),
+  ('M203', 'Gestion des données',     'Gestion des données',     60, 3),
+  ('M204', 'Développement front-end', 'Développement front-end', 60, 4);
 
 INSERT INTO programmer (idModule, idGroupe) VALUES
-  (1, 1), (2, 1), (3, 1), (4, 1);
+  (1, 1), (2, 1), (3, 1);
