@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../includes/auth.php';
-require_once __DIR__ . '/../includes/FormateurForm.php';
+require_once __DIR__ . '/../includes/FormateurRepository.php';
 
 exiger_role('administrateur');
 
@@ -16,35 +16,33 @@ if ($formateur === null) {
     rediriger('formateurs/liste.php');
 }
 
-$valeurs = FormateurForm::valeursDepuisFormateur($formateur);
-$erreurs = [];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    csrf_verifier();
-
-    ['valeurs' => $valeurs, 'donnees' => $donnees, 'erreurs' => $erreurs] = FormateurForm::valider($_POST, $depot, $id);
-
-    if ($erreurs === []) {
-        try {
-            $depot->modifier($id, $donnees);
-            flash('succes', 'Informations modifiées.');
-            rediriger('formateurs/fiche.php?id=' . $id);
-        } catch (PDOException $e) {
-            if (($e->errorInfo[1] ?? 0) !== 1062) {
-                throw $e;
-            }
-            $erreurs['general'] = 'Matricule et email doivent être uniques.';
-        }
-    }
-}
-
-$actionFormulaire = url('formateurs/modifier.php?id=' . $id);
-$urlAnnuler = url('formateurs/fiche.php?id=' . $id);
-
-$titrePage  = 'Modifier un formateur';
+$titrePage = 'Fiche formateur';
 $pageActive = 'formateurs';
+
 require __DIR__ . '/../includes/header.php';
 ?>
-<h1>Modifier un formateur</h1>
-<?php require __DIR__ . '/../includes/formulaire_formateur.php'; ?>
+
+<h1>Fiche formateur</h1>
+
+<div class="carte">
+    <p><strong>Matricule :</strong> <?= e($formateur['matricule']) ?></p>
+    <p><strong>Nom :</strong> <?= e($formateur['nom']) ?></p>
+    <p><strong>Prénom :</strong> <?= e($formateur['prenom']) ?></p>
+    <p><strong>Email :</strong> <?= e($formateur['email']) ?></p>
+    <p><strong>Spécialité :</strong> <?= e($formateur['specialite']) ?></p>
+    <p><strong>Statut :</strong> <?= e($formateur['statut']) ?></p>
+</div>
+
+<div class="boutons">
+    <a class="btn btn-primaire"
+       href="<?= e(url('formateurs/modifier.php?id=' . $id)) ?>">
+       Modifier
+    </a>
+
+    <a class="btn btn-contour"
+       href="<?= e(url('formateurs/liste.php')) ?>">
+       Retour
+    </a>
+</div>
+
 <?php require __DIR__ . '/../includes/footer.php'; ?>
