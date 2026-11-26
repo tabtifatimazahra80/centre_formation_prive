@@ -7,21 +7,29 @@ require_once __DIR__ . '/../includes/FormateurForm.php';
 exiger_role('administrateur');
 
 $depot = new FormateurRepository(db());
-$valeurs = FormateurForm::valeursVides();
+
+$id = (int) entree($_GET, 'id');
+$formateur = $depot->trouver($id);
+
+if ($formateur === null) {
+    flash('erreur', 'Formateur introuvable.');
+    rediriger('formateurs/liste.php');
+}
+
+$valeurs = FormateurForm::valeursDepuisFormateur($formateur);
 $erreurs = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_verifier();
 
-    ['valeurs' => $valeurs, 'donnees' => $donnees, 'erreurs' => $erreurs] = FormateurForm::valider($_POST, $depot);
+    ['valeurs' => $valeurs, 'donnees' => $donnees, 'erreurs' => $erreurs] = FormateurForm::valider($_POST, $depot, $id);
 
     if ($erreurs === []) {
         try {
-            $depot->creer($donnees);
-            flash('succes', 'Formateur ajouté.');
+            $depot->modifier($id, $donnees);
+            flash('succes', 'Informations modifiées.');
             rediriger('formateurs/liste.php');
         } catch (PDOException $e) {
-            // 1062 = doublon (course entre deux enregistrements simultanés)
             if (($e->errorInfo[1] ?? 0) !== 1062) {
                 throw $e;
             }
@@ -30,13 +38,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-$actionFormulaire = url('formateurs/ajouter.php');
+$actionFormulaire = url('formateurs/modifier.php?id=' . $id);
 $urlAnnuler = url('formateurs/liste.php');
 
-$titrePage  = 'Ajouter un formateur';
+$titrePage = 'Modifier un formateur';
 $pageActive = 'formateurs';
+
 require __DIR__ . '/../includes/header.php';
 ?>
-<h1>Ajouter un formateur</h1>
+
+<h1>Modifier un formateur</h1>
+
 <?php require __DIR__ . '/../includes/formulaire_formateur.php'; ?>
+
 <?php require __DIR__ . '/../includes/footer.php'; ?>
